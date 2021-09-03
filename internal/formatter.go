@@ -1,4 +1,4 @@
-package main
+package internal
 
 type Formatter interface {
 	Format(envs []EnvVar) []string
@@ -14,4 +14,8 @@ func (d *DelimiterFormatter) Format(envs []EnvVar) []string {
 		output = append(output, env.Name+d.delimiter+env.Value)
 	}
 	return output
+}
+
+func NewDelimiterFormatter(delimiter string) Formatter {
+	return &DelimiterFormatter{delimiter: delimiter}
 }

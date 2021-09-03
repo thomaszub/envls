@@ -1,17 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/thomaszub/envls/cmd"
 
 func main() {
-	envReader := NewDefaultReader()
-	filterChain := NewEmptyFilterChain()
-	filterChain.AppendFilter(&PrefixFilter{prefix: "_"})
-	formatter := DelimiterFormatter{delimiter: " -> "}
-
-	envs := envReader.Read()
-	filteredEnvs := filterChain.Filter(envs)
-	formattedEnvs := formatter.Format(filteredEnvs)
-	for _, formattedEnv := range formattedEnvs {
-		fmt.Println(formattedEnv)
-	}
+	cmd.Execute()
 }

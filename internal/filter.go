@@ -1,4 +1,4 @@
-package main
+package internal
 
 import "strings"
 
@@ -12,6 +12,10 @@ type PrefixFilter struct {
 
 func (f *PrefixFilter) Accept(env EnvVar) bool {
 	return !strings.HasPrefix(env.Name, f.prefix)
+}
+
+func NewPrefixFilter(prefix string) Filter {
+	return &PrefixFilter{prefix: prefix}
 }
 
 type FilterHandler struct {
@@ -41,6 +45,6 @@ func (f *FilterHandler) AppendFilter(filter Filter) {
 	f.filters = append(f.filters, filter)
 }
 
-func NewEmptyFilterChain() FilterHandler {
+func NewEmptyFilterHandler() FilterHandler {
 	return FilterHandler{filters: make([]Filter, 0)}
 }
