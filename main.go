@@ -4,8 +4,11 @@ import "fmt"
 
 func main() {
 	envReader := NewDefaultReader()
-	envVars := envReader.Read()
-	for _, envVar := range envVars {
-		fmt.Println(envVar)
+	envs := envReader.Read()
+	filterChain := NewEmptyFilterChain()
+	filterChain.AppendFilter(&PrefixFilter{prefix: "_"})
+	filteredEnvs := filterChain.Filter(envs)
+	for _, env := range filteredEnvs {
+		fmt.Println(env)
 	}
 }
