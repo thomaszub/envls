@@ -11,7 +11,7 @@ type PrefixFilter struct {
 }
 
 func (f *PrefixFilter) Accept(env EnvVar) bool {
-	return !strings.HasPrefix(env.name, f.prefix)
+	return !strings.HasPrefix(env.Name, f.prefix)
 }
 
 type FilterHandler struct {

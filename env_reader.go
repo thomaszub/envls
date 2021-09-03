@@ -28,7 +28,7 @@ func (r *DefaultEnvReader) Read() []EnvVar {
 func createEnvVar(s string) EnvVar {
 	keyValuePair := strings.Split(s, "=")
 	return EnvVar{
-		name:  keyValuePair[0],
-		value: keyValuePair[1],
+		Name:  keyValuePair[0],
+		Value: keyValuePair[1],
 	}
 }

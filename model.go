@@ -1,6 +1,6 @@
 package main
 
 type EnvVar struct {
-	name  string
-	value string
+	Name  string
+	Value string
 }
