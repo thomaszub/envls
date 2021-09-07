@@ -30,12 +30,15 @@ func init() {
 	// is called directly, e.g.:
 	// lsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	lsCmd.Flags().StringP("formatter", "f", "del,=", "Specifies the formatter (currently only del) with a comma separated list of configuration arguments")
+	lsCmd.Flags().BoolP("all", "a", false, "Show hidden environmental variables (starting with _) ")
 }
 
 func lsMain(cmd *cobra.Command, _ []string) error {
 	envReader := internal.NewDefaultReader()
 	filterChain := internal.NewEmptyFilterHandler()
-	filterChain.AppendFilter(internal.NewPrefixFilter("_"))
+	if !listHiddenVariables(cmd) {
+		filterChain.AppendFilter(internal.NewPrefixFilter("_"))
+	}
 	formatter, err := dispatchFormatterFlag(cmd)
 	if err != nil {
 		return err
@@ -47,6 +50,15 @@ func lsMain(cmd *cobra.Command, _ []string) error {
 		fmt.Println(formattedEnv)
 	}
 	return nil
+}
+
+func listHiddenVariables(cmd *cobra.Command) bool {
+	flag, err := cmd.Flags().GetBool("all")
+	if err != nil {
+		_, _ = fmt.Fprintln(os.Stderr, "Error reading all flag:", err.Error())
+		return false
+	}
+	return flag
 }
 
 func dispatchFormatterFlag(cmd *cobra.Command) (internal.Formatter, error) {
