@@ -52,7 +52,7 @@ func lsMain(cmd *cobra.Command, _ []string) error {
 func dispatchFormatterFlag(cmd *cobra.Command) (internal.Formatter, error) {
 	flag, err := cmd.Flags().GetString("formatter")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error reading formatter flag:", err.Error())
+		_, _ = fmt.Fprintln(os.Stderr, "Error reading formatter flag:", err.Error())
 		return nil, err
 	}
 	splitted := strings.Split(flag, ",")
