@@ -6,16 +6,16 @@ type Filter interface {
 	Accept(env EnvVar) bool
 }
 
-type PrefixFilter struct {
+type NoPrefixFilter struct {
 	prefix string
 }
 
-func (f *PrefixFilter) Accept(env EnvVar) bool {
+func (f *NoPrefixFilter) Accept(env EnvVar) bool {
 	return !strings.HasPrefix(env.Name, f.prefix)
 }
 
-func NewPrefixFilter(prefix string) Filter {
-	return &PrefixFilter{prefix: prefix}
+func NewNoPrefixFilter(prefix string) Filter {
+	return &NoPrefixFilter{prefix: prefix}
 }
 
 type FilterHandler struct {

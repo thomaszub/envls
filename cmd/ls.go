@@ -28,7 +28,7 @@ func lsMain(cmd *cobra.Command, _ []string) error {
 	envReader := internal.NewDefaultReader()
 	filterChain := internal.NewEmptyFilterHandler()
 	if !listHiddenVariables(cmd) {
-		filterChain.AppendFilter(internal.NewPrefixFilter("_"))
+		filterChain.AppendFilter(internal.NewNoPrefixFilter("_"))
 	}
 	formatter, err := dispatchFormatterFlag(cmd)
 	if err != nil {
