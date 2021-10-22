@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/thomaszub/envls/internal"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -22,6 +23,7 @@ func init() {
 
 	lsCmd.Flags().BoolP("all", "a", false, "Show hidden environmental variables (starting with _) ")
 	lsCmd.Flags().StringP("formatter", "f", "del,=", "Specifies the formatter (currently only del) with a comma separated list of configuration arguments")
+	lsCmd.Flags().StringArrayP("search", "s", []string{}, "Filter environmental variables by regex pattern matching names and values")
 }
 
 func lsMain(cmd *cobra.Command, _ []string) error {
@@ -29,6 +31,13 @@ func lsMain(cmd *cobra.Command, _ []string) error {
 	filterChain := internal.NewEmptyFilterHandler()
 	if !listHiddenVariables(cmd) {
 		filterChain.AppendFilter(internal.NewNoPrefixFilter("_"))
+	}
+	regexFilters, err := dispatchSearchFlag(cmd)
+	if err != nil {
+		return err
+	}
+	for _, filter := range regexFilters {
+		filterChain.AppendFilter(filter)
 	}
 	formatter, err := dispatchFormatterFlag(cmd)
 	if err != nil {
@@ -68,5 +77,20 @@ func dispatchFormatterFlag(cmd *cobra.Command) (internal.Formatter, error) {
 	default:
 		return nil, errors.New(fmt.Sprintf("Unknown formatter: %s", flag))
 	}
+}
 
+func dispatchSearchFlag(cmd *cobra.Command) ([]internal.Filter, error) {
+	var filters []internal.Filter
+	searched, err := cmd.Flags().GetStringArray("search")
+	if err != nil {
+		return nil, err
+	}
+	for _, s := range searched {
+		regex, err := regexp.Compile(s)
+		if err != nil {
+			return nil, err
+		}
+		filters = append(filters, internal.NewRegexFilter(regex))
+	}
+	return filters, nil
 }
