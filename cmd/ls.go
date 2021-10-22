@@ -28,21 +28,13 @@ func init() {
 func lsMain(cmd *cobra.Command, _ []string) error {
 	envReader := internal.NewDefaultReader()
 	filterChain := internal.NewEmptyFilterHandler()
-	listHiddenVars, err := dispatchAllFlag(cmd)
-	if err != nil {
+	if err := applyAllFlag(cmd, &filterChain); err != nil {
 		return err
 	}
-	if !listHiddenVars {
-		filterChain.AppendFilter(internal.NewNoPrefixFilter("_"))
-	}
-	regexFilters, err := dispatchSearchFlag(cmd)
-	if err != nil {
+	if err := applySearchFlag(cmd, &filterChain); err != nil {
 		return err
 	}
-	for _, filter := range regexFilters {
-		filterChain.AppendFilter(filter)
-	}
-	formatter, err := dispatchFormatterFlag(cmd)
+	formatter, err := getFormatter(cmd)
 	if err != nil {
 		return err
 	}
@@ -55,15 +47,33 @@ func lsMain(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
-func dispatchAllFlag(cmd *cobra.Command) (bool, error) {
-	flag, err := cmd.Flags().GetBool("all")
+func applyAllFlag(cmd *cobra.Command, filterHandler *internal.FilterHandler) error {
+	listHiddenVars, err := cmd.Flags().GetBool("all")
 	if err != nil {
-		return flag, err
+		return err
 	}
-	return flag, nil
+	if !listHiddenVars {
+		filterHandler.AppendFilter(internal.NewNoPrefixFilter("_"))
+	}
+	return nil
 }
 
-func dispatchFormatterFlag(cmd *cobra.Command) (internal.Formatter, error) {
+func applySearchFlag(cmd *cobra.Command, filterHandler *internal.FilterHandler) error {
+	searched, err := cmd.Flags().GetStringArray("search")
+	if err != nil {
+		return err
+	}
+	for _, s := range searched {
+		regex, err := regexp.Compile(s)
+		if err != nil {
+			return err
+		}
+		filterHandler.AppendFilter(internal.NewRegexFilter(regex))
+	}
+	return nil
+}
+
+func getFormatter(cmd *cobra.Command) (internal.Formatter, error) {
 	flag, err := cmd.Flags().GetString("formatter")
 	if err != nil {
 		return nil, err
@@ -78,20 +88,4 @@ func dispatchFormatterFlag(cmd *cobra.Command) (internal.Formatter, error) {
 	default:
 		return nil, errors.New(fmt.Sprintf("Unknown formatter: %s", flag))
 	}
-}
-
-func dispatchSearchFlag(cmd *cobra.Command) ([]internal.Filter, error) {
-	var filters []internal.Filter
-	searched, err := cmd.Flags().GetStringArray("search")
-	if err != nil {
-		return nil, err
-	}
-	for _, s := range searched {
-		regex, err := regexp.Compile(s)
-		if err != nil {
-			return nil, err
-		}
-		filters = append(filters, internal.NewRegexFilter(regex))
-	}
-	return filters, nil
 }
