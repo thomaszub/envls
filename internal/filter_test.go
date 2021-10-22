@@ -33,7 +33,7 @@ func TestNoPrefixFilter_Accept(t *testing.T) {
 	for _, tt := range tests {
 		act := f.Accept(tt.input)
 		if act != tt.exp {
-			t.Errorf("Wrong Accept result for NewNoPrefixFilter. Got %t for %s", act, tt.input)
+			t.Errorf("Wrong Accept result. Got %t for %+v", act, tt.input)
 		}
 
 	}
