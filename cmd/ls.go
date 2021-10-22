@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/thomaszub/envls/internal"
-	"os"
 	"regexp"
 	"strings"
 
@@ -29,7 +28,11 @@ func init() {
 func lsMain(cmd *cobra.Command, _ []string) error {
 	envReader := internal.NewDefaultReader()
 	filterChain := internal.NewEmptyFilterHandler()
-	if !listHiddenVariables(cmd) {
+	listHiddenVars, err := dispatchAllFlag(cmd)
+	if err != nil {
+		return err
+	}
+	if !listHiddenVars {
 		filterChain.AppendFilter(internal.NewNoPrefixFilter("_"))
 	}
 	regexFilters, err := dispatchSearchFlag(cmd)
@@ -52,19 +55,17 @@ func lsMain(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
-func listHiddenVariables(cmd *cobra.Command) bool {
+func dispatchAllFlag(cmd *cobra.Command) (bool, error) {
 	flag, err := cmd.Flags().GetBool("all")
 	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, "Error reading all flag:", err.Error())
-		return false
+		return flag, err
 	}
-	return flag
+	return flag, nil
 }
 
 func dispatchFormatterFlag(cmd *cobra.Command) (internal.Formatter, error) {
 	flag, err := cmd.Flags().GetString("formatter")
 	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, "Error reading formatter flag:", err.Error())
 		return nil, err
 	}
 	splitted := strings.Split(flag, ",")
