@@ -33,3 +33,7 @@ func (f *RegexFilter) Accept(env EnvVar) bool {
 	accept = f.regex.MatchString(env.Value)
 	return accept
 }
+
+func NewRegexFilter(regex *regexp.Regexp) Filter {
+	return &RegexFilter{regex: regex}
+}
