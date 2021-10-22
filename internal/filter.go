@@ -22,14 +22,14 @@ type FilterHandler struct {
 	filters []Filter
 }
 
-func (f *FilterHandler) Filter(envs []EnvVar) []EnvVar {
-	filtered := make([]EnvVar, 0)
+func (f *FilterHandler) Accepted(envs []EnvVar) []EnvVar {
+	accepted := make([]EnvVar, 0)
 	for _, env := range envs {
 		if f.Accept(env) {
-			filtered = append(filtered, env)
+			accepted = append(accepted, env)
 		}
 	}
-	return filtered
+	return accepted
 }
 
 func (f *FilterHandler) Accept(env EnvVar) bool {

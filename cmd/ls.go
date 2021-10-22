@@ -35,8 +35,8 @@ func lsMain(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 	envs := envReader.Read()
-	filteredEnvs := filterChain.Filter(envs)
-	formattedEnvs := formatter.Format(filteredEnvs)
+	acceptedEnvs := filterChain.Accepted(envs)
+	formattedEnvs := formatter.Format(acceptedEnvs)
 	for _, formattedEnv := range formattedEnvs {
 		fmt.Println(formattedEnv)
 	}
