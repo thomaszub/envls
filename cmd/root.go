@@ -1,12 +1,12 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/thomaszub/envls/internal"
 	"regexp"
 	"strings"
+
+	"github.com/spf13/cobra"
+	"github.com/thomaszub/envls/internal"
 )
 
 var rootCmd = &cobra.Command{
@@ -82,10 +82,10 @@ func getFormatter(cmd *cobra.Command) (internal.Formatter, error) {
 	switch splitted[0] {
 	case "del":
 		if len(splitted) != 2 {
-			return nil, errors.New(fmt.Sprintf("Formatter \"del\" takes exactly one configuration argument, e.g. del,=. Got: %s", flag))
+			return nil, fmt.Errorf("formatter \"del\" takes exactly one configuration argument, e.g. del,=. Got: %s", flag)
 		}
 		return internal.NewDelimiterFormatter(splitted[1]), nil
 	default:
-		return nil, errors.New(fmt.Sprintf("Unknown formatter: %s", flag))
+		return nil, fmt.Errorf("unknown formatter: %s", flag)
 	}
 }
