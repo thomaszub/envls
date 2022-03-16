@@ -7,26 +7,68 @@ import (
 
 func TestDelimiterFormatter_Format(t *testing.T) {
 	f := NewDelimiterFormatter("->")
-	tests := []EnvVar{
+	tests := getTestCases()
+	exp := `SOMEVAR->someval
+OTHER->otherval`
+
+	act, err := f.Format(tests)
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+	assert(t, exp, act)
+}
+
+func TestJsonFormatterCompact_Format(t *testing.T) {
+	f := NewJsonFormatter(false)
+	tests := getTestCases()
+	exp := `[{"Name":"SOMEVAR","Value":"someval"},{"Name":"OTHER","Value":"otherval"}]`
+
+	act, err := f.Format(tests)
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+	assert(t, exp, act)
+}
+
+func TestJsonFormatterPretty_Format(t *testing.T) {
+	f := NewJsonFormatter(true)
+	tests := getTestCases()
+	exp := `[
+    {
+        "Name": "SOMEVAR",
+        "Value": "someval"
+    },
+    {
+        "Name": "OTHER",
+        "Value": "otherval"
+    }
+]`
+
+	act, err := f.Format(tests)
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+	assert(t, exp, act)
+}
+
+func getTestCases() []EnvVar {
+	return []EnvVar{
 		{
 			Name:  "SOMEVAR",
-			Value: "value",
+			Value: "someval",
 		},
 		{
 			Name:  "OTHER",
 			Value: "otherval",
 		},
 	}
+}
 
-	exp := []string{
-		"SOMEVAR->value",
-		"OTHER->otherval",
-	}
-
-	act := f.Format(tests)
-
+func assert(t *testing.T, exp string, act string) {
 	if !reflect.DeepEqual(exp, act) {
-		t.Errorf("Formatting not correct. Got %s", act)
+		t.Errorf("Formatting not correct.\nExpected:\n%s\nGot:\n%s", exp, act)
 	}
-
 }

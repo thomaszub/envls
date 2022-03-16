@@ -21,7 +21,7 @@ func Execute() {
 }
 func init() {
 	rootCmd.Flags().BoolP("all", "a", false, "Show hidden environmental variables (starting with _) ")
-	rootCmd.Flags().StringP("formatter", "f", "del,=", "Specifies the formatter (currently only del) with a comma separated list of configuration arguments")
+	rootCmd.Flags().StringP("formatter", "f", "del,=", "Specifies the formatter with a comma separated list of configuration arguments. Possible values: del,DELIMITER and json,{compact,pretty}")
 	rootCmd.Flags().StringArrayP("search", "s", []string{}, "Filter environmental variables by regex pattern matching names and values")
 }
 
@@ -40,10 +40,11 @@ func main(cmd *cobra.Command, _ []string) error {
 	}
 	envs := envReader.Read()
 	acceptedEnvs := filterChain.Accepted(envs)
-	formattedEnvs := formatter.Format(acceptedEnvs)
-	for _, formattedEnv := range formattedEnvs {
-		fmt.Println(formattedEnv)
+	formattedEnvs, err := formatter.Format(acceptedEnvs)
+	if err != nil {
+		return err
 	}
+	fmt.Println(formattedEnvs)
 	return nil
 }
 
@@ -85,7 +86,23 @@ func getFormatter(cmd *cobra.Command) (internal.Formatter, error) {
 			return nil, fmt.Errorf("formatter \"del\" takes exactly one configuration argument, e.g. del,=. Got: %s", flag)
 		}
 		return internal.NewDelimiterFormatter(splitted[1]), nil
+	case "json":
+		if len(splitted) != 2 {
+			return nil, jsonFormatterError(flag)
+		}
+		switch splitted[1] {
+		case "compact":
+			return internal.NewJsonFormatter(false), nil
+		case "pretty":
+			return internal.NewJsonFormatter(true), nil
+		default:
+			return nil, jsonFormatterError(flag)
+		}
 	default:
 		return nil, fmt.Errorf("unknown formatter: %s", flag)
 	}
+}
+
+func jsonFormatterError(flag string) error {
+	return fmt.Errorf("formatter \"json\" takes exactly one configuration argument of compact or pretty, e.g. json,compact. Got: %s", flag)
 }
