@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -19,10 +20,6 @@ func (d *DelimiterFormatter) Format(envs []EnvVar) (string, error) {
 		output = append(output, env.Name+d.delimiter+env.Value)
 	}
 	return strings.Join(output, "\n"), nil
-}
-
-func NewDelimiterFormatter(delimiter string) Formatter {
-	return &DelimiterFormatter{delimiter: delimiter}
 }
 
 type JsonFormatter struct {
@@ -43,6 +40,31 @@ func (d *JsonFormatter) Format(envs []EnvVar) (string, error) {
 	return string(j), nil
 }
 
-func NewJsonFormatter(pretty bool) Formatter {
-	return &JsonFormatter{pretty: pretty}
+func GetFormatter(flag string) (Formatter, error) {
+	splitted := strings.Split(flag, ",")
+	switch splitted[0] {
+	case "del":
+		if len(splitted) != 2 {
+			return nil, fmt.Errorf("formatter \"del\" takes exactly one configuration argument, e.g. del,=. Got: %s", flag)
+		}
+		return &DelimiterFormatter{delimiter: splitted[1]}, nil
+	case "json":
+		if len(splitted) != 2 {
+			return nil, jsonFormatterError(flag)
+		}
+		switch splitted[1] {
+		case "compact":
+			return &JsonFormatter{pretty: false}, nil
+		case "pretty":
+			return &JsonFormatter{pretty: true}, nil
+		default:
+			return nil, jsonFormatterError(flag)
+		}
+	default:
+		return nil, fmt.Errorf("unknown formatter: %s", flag)
+	}
+}
+
+func jsonFormatterError(flag string) error {
+	return fmt.Errorf("formatter \"json\" takes exactly one configuration argument of compact or pretty, e.g. json,compact. Got: %s", flag)
 }

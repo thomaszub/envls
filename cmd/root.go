@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"regexp"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/thomaszub/envls/internal"
@@ -79,30 +78,5 @@ func getFormatter(cmd *cobra.Command) (internal.Formatter, error) {
 	if err != nil {
 		return nil, err
 	}
-	splitted := strings.Split(flag, ",")
-	switch splitted[0] {
-	case "del":
-		if len(splitted) != 2 {
-			return nil, fmt.Errorf("formatter \"del\" takes exactly one configuration argument, e.g. del,=. Got: %s", flag)
-		}
-		return internal.NewDelimiterFormatter(splitted[1]), nil
-	case "json":
-		if len(splitted) != 2 {
-			return nil, jsonFormatterError(flag)
-		}
-		switch splitted[1] {
-		case "compact":
-			return internal.NewJsonFormatter(false), nil
-		case "pretty":
-			return internal.NewJsonFormatter(true), nil
-		default:
-			return nil, jsonFormatterError(flag)
-		}
-	default:
-		return nil, fmt.Errorf("unknown formatter: %s", flag)
-	}
-}
-
-func jsonFormatterError(flag string) error {
-	return fmt.Errorf("formatter \"json\" takes exactly one configuration argument of compact or pretty, e.g. json,compact. Got: %s", flag)
+	return internal.GetFormatter(flag)
 }
