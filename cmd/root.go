@@ -8,6 +8,12 @@ import (
 	"github.com/thomaszub/envls/internal"
 )
 
+const (
+	ALL       = "all"
+	FORMATTER = "formatter"
+	SEARCH    = "search"
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "envls",
 	Short: "CLI tool for listing environmental variables",
@@ -19,9 +25,9 @@ func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }
 func init() {
-	rootCmd.Flags().BoolP("all", "a", false, "Show hidden environmental variables (starting with _) ")
-	rootCmd.Flags().StringP("formatter", "f", "del,=", "Specifies the formatter with a comma separated list of configuration arguments. Possible values: del,DELIMITER and json,{compact,pretty}")
-	rootCmd.Flags().StringArrayP("search", "s", []string{}, "Filter environmental variables by regex pattern matching names and values")
+	rootCmd.Flags().BoolP(ALL, "a", false, "Show hidden environmental variables (starting with _) ")
+	rootCmd.Flags().StringP(FORMATTER, "f", "del,=", "Specifies the formatter with a comma separated list of configuration arguments. Possible values: del,DELIMITER and json,{compact,pretty}")
+	rootCmd.Flags().StringArrayP(SEARCH, "s", []string{}, "Filter environmental variables by regex pattern matching names and values")
 }
 
 func main(cmd *cobra.Command, _ []string) error {
@@ -48,7 +54,7 @@ func main(cmd *cobra.Command, _ []string) error {
 }
 
 func applyAllFlag(cmd *cobra.Command, filterHandler *internal.FilterHandler) error {
-	listHiddenVars, err := cmd.Flags().GetBool("all")
+	listHiddenVars, err := cmd.Flags().GetBool(ALL)
 	if err != nil {
 		return err
 	}
@@ -59,7 +65,7 @@ func applyAllFlag(cmd *cobra.Command, filterHandler *internal.FilterHandler) err
 }
 
 func applySearchFlag(cmd *cobra.Command, filterHandler *internal.FilterHandler) error {
-	searched, err := cmd.Flags().GetStringArray("search")
+	searched, err := cmd.Flags().GetStringArray(SEARCH)
 	if err != nil {
 		return err
 	}
@@ -74,7 +80,7 @@ func applySearchFlag(cmd *cobra.Command, filterHandler *internal.FilterHandler) 
 }
 
 func getFormatter(cmd *cobra.Command) (internal.Formatter, error) {
-	flag, err := cmd.Flags().GetString("formatter")
+	flag, err := cmd.Flags().GetString(FORMATTER)
 	if err != nil {
 		return nil, err
 	}
