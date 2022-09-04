@@ -26,12 +26,8 @@ func NewNoPrefixFilter(prefix string) Filter {
 }
 
 func (f *RegexFilter) Accept(env EnvVar) bool {
-	accept := f.regex.MatchString(env.Name)
-	if accept {
-		return true
-	}
-	accept = f.regex.MatchString(env.Value)
-	return accept
+	r := f.regex
+	return r.MatchString(env.Name) || r.MatchString(env.Value)
 }
 
 func NewRegexFilter(regex *regexp.Regexp) Filter {
