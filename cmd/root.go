@@ -32,13 +32,18 @@ func init() {
 
 func main(cmd *cobra.Command, _ []string) error {
 	envReader := internal.NewDefaultReader()
-	filterChain := internal.NewEmptyFilterHandler()
-	if err := applyAllFlag(cmd, &filterChain); err != nil {
+	filters := []internal.Filter{}
+	all, err := allFlagFilters(cmd)
+	if err != nil {
 		return err
 	}
-	if err := applySearchFlag(cmd, &filterChain); err != nil {
+	filters = append(filters, all...)
+	search, err := searchFlagFilters(cmd)
+	if err != nil {
 		return err
 	}
+	filters = append(filters, search...)
+	filterChain := internal.NewFilterHandler(filters)
 	formatter, err := getFormatter(cmd)
 	if err != nil {
 		return err
@@ -53,32 +58,33 @@ func main(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
-func applyAllFlag(cmd *cobra.Command, filterHandler *internal.FilterHandler) error {
+func allFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
 	listHiddenVars, err := cmd.Flags().GetBool(ALL)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if !listHiddenVars {
 		f := internal.NewNoPrefixFilter("_")
-		filterHandler.Append(&f)
+		return []internal.Filter{&f}, nil
 	}
-	return nil
+	return []internal.Filter{}, nil
 }
 
-func applySearchFlag(cmd *cobra.Command, filterHandler *internal.FilterHandler) error {
+func searchFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
 	searched, err := cmd.Flags().GetStringArray(SEARCH)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	filters := []internal.Filter{}
 	for _, s := range searched {
 		regex, err := regexp.Compile(s)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		f := internal.NewRegexFilter(regex)
-		filterHandler.Append(&f)
+		filters = append(filters, &f)
 	}
-	return nil
+	return filters, nil
 }
 
 func getFormatter(cmd *cobra.Command) (internal.Formatter, error) {

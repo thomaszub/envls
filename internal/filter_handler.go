@@ -27,10 +27,6 @@ func (f *FilterHandler) Accept(env EnvVar) bool {
 	return true
 }
 
-func (f *FilterHandler) Append(filter Filter) {
-	f.filters = append(f.filters, filter)
-}
-
-func NewEmptyFilterHandler() FilterHandler {
-	return FilterHandler{filters: make([]Filter, 0)}
+func NewFilterHandler(filters []Filter) FilterHandler {
+	return FilterHandler{filters: filters}
 }
