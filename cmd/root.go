@@ -71,11 +71,11 @@ func allFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !listHiddenVars {
-		f := internal.NewNoPrefixFilter("_")
-		return []internal.Filter{&f}, nil
+	if listHiddenVars {
+		return []internal.Filter{}, nil
 	}
-	return []internal.Filter{}, nil
+	f := internal.NewNoPrefixFilter("_")
+	return []internal.Filter{&f}, nil
 }
 
 func searchFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
