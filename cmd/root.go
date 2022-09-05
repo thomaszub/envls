@@ -32,30 +32,38 @@ func init() {
 
 func main(cmd *cobra.Command, _ []string) error {
 	envReader := internal.NewDefaultReader()
-	filters := []internal.Filter{}
-	all, err := allFlagFilters(cmd)
-	if err != nil {
-		return err
-	}
-	filters = append(filters, all...)
-	search, err := searchFlagFilters(cmd)
-	if err != nil {
-		return err
-	}
-	filters = append(filters, search...)
-	filterChain := internal.NewFilterHandler(filters)
 	formatter, err := getFormatter(cmd)
 	if err != nil {
 		return err
 	}
 	envs := envReader.Read()
-	acceptedEnvs := filterChain.Accepted(envs)
+	filterHandler, err := makeFilterHandler(cmd)
+	if err != nil {
+		return err
+	}
+	acceptedEnvs := filterHandler.Accepted(envs)
 	formattedEnvs, err := formatter.Format(acceptedEnvs)
 	if err != nil {
 		return err
 	}
 	fmt.Println(formattedEnvs)
 	return nil
+}
+
+func makeFilterHandler(cmd *cobra.Command) (*internal.FilterHandler, error) {
+	filters := []internal.Filter{}
+	all, err := allFlagFilters(cmd)
+	if err != nil {
+		return nil, err
+	}
+	filters = append(filters, all...)
+	search, err := searchFlagFilters(cmd)
+	if err != nil {
+		return nil, err
+	}
+	filters = append(filters, search...)
+	h := internal.NewFilterHandler(filters)
+	return &h, nil
 }
 
 func allFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
