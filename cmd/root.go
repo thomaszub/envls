@@ -51,7 +51,7 @@ func main(cmd *cobra.Command, _ []string) error {
 }
 
 func makeFilterHandler(cmd *cobra.Command) (*internal.FilterHandler, error) {
-	filters := []internal.Filter{}
+	var filters []internal.Filter
 	all, err := allFlagFilters(cmd)
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func searchFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
 	if err != nil {
 		return nil, err
 	}
-	filters := []internal.Filter{}
+	var filters []internal.Filter
 	for _, s := range searched {
 		regex, err := regexp.Compile(s)
 		if err != nil {

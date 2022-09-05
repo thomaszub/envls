@@ -17,7 +17,7 @@ type DefaultEnvReader struct {
 }
 
 func (r *DefaultEnvReader) Read() []EnvVar {
-	envVars := make([]EnvVar, 0)
+	var envVars []EnvVar
 	for _, s := range os.Environ() {
 		envVar := createEnvVar(s)
 		envVars = append(envVars, envVar)

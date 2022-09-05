@@ -15,7 +15,7 @@ type DelimiterFormatter struct {
 }
 
 func (d *DelimiterFormatter) Format(envs []EnvVar) (string, error) {
-	output := make([]string, 0)
+	var output []string
 	for _, env := range envs {
 		output = append(output, env.Name+d.delimiter+env.Value)
 	}

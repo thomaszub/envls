@@ -9,7 +9,7 @@ type FilterHandler struct {
 }
 
 func (f *FilterHandler) Accepted(envs []EnvVar) []EnvVar {
-	accepted := make([]EnvVar, 0)
+	var accepted []EnvVar
 	for _, env := range envs {
 		if f.accept(env) {
 			accepted = append(accepted, env)
