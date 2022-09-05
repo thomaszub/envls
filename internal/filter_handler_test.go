@@ -21,7 +21,7 @@ func TestEmptyFilterHandler_Accept(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		act := f.Accept(tt.input)
+		act := f.accept(tt.input)
 		if act != tt.exp {
 			t.Errorf("Empty filter handler must accept all. Test: %+v", tt.input)
 		}
@@ -67,7 +67,7 @@ func TestFilterHandler_Accept(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		act := h.Accept(tt.input)
+		act := h.accept(tt.input)
 		if act != tt.exp {
 			t.Errorf("Wrong Accept result for FilterHandler. Got %t for %+v", act, tt.input)
 		}
