@@ -21,8 +21,8 @@ func (f *NoPrefixFilter) Accept(env EnvVar) bool {
 	return !strings.HasPrefix(env.Name, f.prefix)
 }
 
-func NewNoPrefixFilter(prefix string) Filter {
-	return &NoPrefixFilter{prefix: prefix}
+func NewNoPrefixFilter(prefix string) NoPrefixFilter {
+	return NoPrefixFilter{prefix: prefix}
 }
 
 func (f *RegexFilter) Accept(env EnvVar) bool {
@@ -30,6 +30,6 @@ func (f *RegexFilter) Accept(env EnvVar) bool {
 	return r.MatchString(env.Name) || r.MatchString(env.Value)
 }
 
-func NewRegexFilter(regex *regexp.Regexp) Filter {
-	return &RegexFilter{regex: regex}
+func NewRegexFilter(regex *regexp.Regexp) RegexFilter {
+	return RegexFilter{regex: regex}
 }

@@ -29,9 +29,11 @@ func TestEmptyFilterHandler_Accept(t *testing.T) {
 }
 
 func TestFilterHandler_Accept(t *testing.T) {
-	f := NewEmptyFilterHandler()
-	f.AppendFilter(NewNoPrefixFilter("_"))
-	f.AppendFilter(NewNoPrefixFilter("&"))
+	f1 := NewNoPrefixFilter("_")
+	f2 := NewNoPrefixFilter("&")
+	h := NewEmptyFilterHandler()
+	h.AppendFilter(&f1)
+	h.AppendFilter(&f2)
 	tests := []struct {
 		input EnvVar
 		exp   bool
@@ -67,7 +69,7 @@ func TestFilterHandler_Accept(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		act := f.Accept(tt.input)
+		act := h.Accept(tt.input)
 		if act != tt.exp {
 			t.Errorf("Wrong Accept result for FilterHandler. Got %t for %+v", act, tt.input)
 		}
@@ -75,9 +77,11 @@ func TestFilterHandler_Accept(t *testing.T) {
 }
 
 func TestFilterHandler_Accepted(t *testing.T) {
-	f := NewEmptyFilterHandler()
-	f.AppendFilter(NewNoPrefixFilter("_"))
-	f.AppendFilter(NewNoPrefixFilter("&"))
+	f1 := NewNoPrefixFilter("_")
+	f2 := NewNoPrefixFilter("&")
+	h := NewEmptyFilterHandler()
+	h.AppendFilter(&f1)
+	h.AppendFilter(&f2)
 	tests := []EnvVar{
 		{
 			Name:  "SOMEVAR",
@@ -108,7 +112,7 @@ func TestFilterHandler_Accepted(t *testing.T) {
 		},
 	}
 
-	act := f.Accepted(tests)
+	act := h.Accepted(tests)
 
 	if !reflect.DeepEqual(exp, act) {
 		t.Errorf("Accepted list contains not the excpected elements. Got: %+v", act)
