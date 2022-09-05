@@ -1,5 +1,9 @@
 package internal
 
+type Filter interface {
+	Accept(env EnvVar) bool
+}
+
 type FilterHandler struct {
 	filters []Filter
 }
@@ -23,7 +27,7 @@ func (f *FilterHandler) Accept(env EnvVar) bool {
 	return true
 }
 
-func (f *FilterHandler) AppendFilter(filter Filter) {
+func (f *FilterHandler) Append(filter Filter) {
 	f.filters = append(f.filters, filter)
 }
 

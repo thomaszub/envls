@@ -32,8 +32,8 @@ func TestFilterHandler_Accept(t *testing.T) {
 	f1 := NewNoPrefixFilter("_")
 	f2 := NewNoPrefixFilter("&")
 	h := NewEmptyFilterHandler()
-	h.AppendFilter(&f1)
-	h.AppendFilter(&f2)
+	h.Append(&f1)
+	h.Append(&f2)
 	tests := []struct {
 		input EnvVar
 		exp   bool
@@ -80,8 +80,8 @@ func TestFilterHandler_Accepted(t *testing.T) {
 	f1 := NewNoPrefixFilter("_")
 	f2 := NewNoPrefixFilter("&")
 	h := NewEmptyFilterHandler()
-	h.AppendFilter(&f1)
-	h.AppendFilter(&f2)
+	h.Append(&f1)
+	h.Append(&f2)
 	tests := []EnvVar{
 		{
 			Name:  "SOMEVAR",

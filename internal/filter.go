@@ -5,10 +5,6 @@ import (
 	"strings"
 )
 
-type Filter interface {
-	Accept(env EnvVar) bool
-}
-
 type NoPrefixFilter struct {
 	prefix string
 }

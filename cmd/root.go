@@ -60,7 +60,7 @@ func applyAllFlag(cmd *cobra.Command, filterHandler *internal.FilterHandler) err
 	}
 	if !listHiddenVars {
 		f := internal.NewNoPrefixFilter("_")
-		filterHandler.AppendFilter(&f)
+		filterHandler.Append(&f)
 	}
 	return nil
 }
@@ -76,7 +76,7 @@ func applySearchFlag(cmd *cobra.Command, filterHandler *internal.FilterHandler) 
 			return err
 		}
 		f := internal.NewRegexFilter(regex)
-		filterHandler.AppendFilter(&f)
+		filterHandler.Append(&f)
 	}
 	return nil
 }
