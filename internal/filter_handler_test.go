@@ -6,7 +6,7 @@ import (
 )
 
 func TestEmptyFilterHandler_Accept(t *testing.T) {
-	f := NewFilterHandler([]Filter{})
+	f := FilterHandler{Filters: []Filter{}}
 	tests := []struct {
 		input EnvVar
 		exp   bool
@@ -29,9 +29,7 @@ func TestEmptyFilterHandler_Accept(t *testing.T) {
 }
 
 func TestFilterHandler_Accept(t *testing.T) {
-	f1 := NewNoPrefixFilter("_")
-	f2 := NewNoPrefixFilter("&")
-	h := NewFilterHandler([]Filter{&f1, &f2})
+	h := FilterHandler{Filters: []Filter{&NoPrefixFilter{Prefix: "_"}, &NoPrefixFilter{Prefix: "&"}}}
 	tests := []struct {
 		input EnvVar
 		exp   bool
@@ -75,9 +73,7 @@ func TestFilterHandler_Accept(t *testing.T) {
 }
 
 func TestFilterHandler_Accepted(t *testing.T) {
-	f1 := NewNoPrefixFilter("_")
-	f2 := NewNoPrefixFilter("&")
-	h := NewFilterHandler([]Filter{&f1, &f2})
+	h := FilterHandler{Filters: []Filter{&NoPrefixFilter{Prefix: "_"}, &NoPrefixFilter{Prefix: "&"}}}
 	tests := []EnvVar{
 		{
 			Name:  "SOMEVAR",

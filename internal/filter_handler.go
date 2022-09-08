@@ -5,7 +5,7 @@ type Filter interface {
 }
 
 type FilterHandler struct {
-	filters []Filter
+	Filters []Filter
 }
 
 func (f *FilterHandler) Accepted(envs []EnvVar) []EnvVar {
@@ -19,14 +19,10 @@ func (f *FilterHandler) Accepted(envs []EnvVar) []EnvVar {
 }
 
 func (f *FilterHandler) accept(env EnvVar) bool {
-	for _, filter := range f.filters {
+	for _, filter := range f.Filters {
 		if !filter.Accept(env) {
 			return false
 		}
 	}
 	return true
-}
-
-func NewFilterHandler(filters []Filter) FilterHandler {
-	return FilterHandler{filters: filters}
 }

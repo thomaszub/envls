@@ -6,26 +6,18 @@ import (
 )
 
 type NoPrefixFilter struct {
-	prefix string
+	Prefix string
 }
 
 type RegexFilter struct {
-	regex *regexp.Regexp
+	Regex *regexp.Regexp
 }
 
 func (f *NoPrefixFilter) Accept(env EnvVar) bool {
-	return !strings.HasPrefix(env.Name, f.prefix)
-}
-
-func NewNoPrefixFilter(prefix string) NoPrefixFilter {
-	return NoPrefixFilter{prefix: prefix}
+	return !strings.HasPrefix(env.Name, f.Prefix)
 }
 
 func (f *RegexFilter) Accept(env EnvVar) bool {
-	r := f.regex
+	r := f.Regex
 	return r.MatchString(env.Name) || r.MatchString(env.Value)
-}
-
-func NewRegexFilter(regex *regexp.Regexp) RegexFilter {
-	return RegexFilter{regex: regex}
 }

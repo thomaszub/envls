@@ -6,7 +6,7 @@ import (
 )
 
 func TestNoPrefixFilter_Accept(t *testing.T) {
-	f := NewNoPrefixFilter("_")
+	f := NoPrefixFilter{Prefix: "_"}
 	tests := []struct {
 		input EnvVar
 		exp   bool
@@ -46,7 +46,7 @@ func TestRegexFilter_Accept(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f := RegexFilter{regex: regex}
+	f := RegexFilter{Regex: regex}
 	tests := []struct {
 		input EnvVar
 		exp   bool

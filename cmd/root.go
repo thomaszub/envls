@@ -62,7 +62,7 @@ func makeFilterHandler(cmd *cobra.Command) (*internal.FilterHandler, error) {
 		return nil, err
 	}
 	filters = append(filters, search...)
-	h := internal.NewFilterHandler(filters)
+	h := internal.FilterHandler{Filters: filters}
 	return &h, nil
 }
 
@@ -74,7 +74,7 @@ func allFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
 	if listHiddenVars {
 		return []internal.Filter{}, nil
 	}
-	f := internal.NewNoPrefixFilter("_")
+	f := internal.NoPrefixFilter{Prefix: "_"}
 	return []internal.Filter{&f}, nil
 }
 
@@ -89,7 +89,7 @@ func searchFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
 		if err != nil {
 			return nil, err
 		}
-		f := internal.NewRegexFilter(regex)
+		f := internal.RegexFilter{Regex: regex}
 		filters = append(filters, &f)
 	}
 	return filters, nil
