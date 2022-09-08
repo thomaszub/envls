@@ -24,6 +24,7 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }
+
 func init() {
 	rootCmd.Flags().BoolP(ALL, "a", false, "Show hidden environmental variables (starting with _) ")
 	rootCmd.Flags().StringP(FORMATTER, "f", "del,=", "Specifies the formatter with a comma separated list of configuration arguments. Possible values: del,DELIMITER and json,{compact,pretty}")
@@ -48,6 +49,14 @@ func main(cmd *cobra.Command, _ []string) error {
 	}
 	fmt.Println(formattedEnvs)
 	return nil
+}
+
+func getFormatter(cmd *cobra.Command) (internal.Formatter, error) {
+	flag, err := cmd.Flags().GetString(FORMATTER)
+	if err != nil {
+		return nil, err
+	}
+	return internal.GetFormatter(flag)
 }
 
 func makeFilterHandler(cmd *cobra.Command) (*internal.FilterHandler, error) {
@@ -93,12 +102,4 @@ func searchFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
 		filters = append(filters, &f)
 	}
 	return filters, nil
-}
-
-func getFormatter(cmd *cobra.Command) (internal.Formatter, error) {
-	flag, err := cmd.Flags().GetString(FORMATTER)
-	if err != nil {
-		return nil, err
-	}
-	return internal.GetFormatter(flag)
 }
