@@ -31,7 +31,7 @@ func init() {
 }
 
 func main(cmd *cobra.Command, _ []string) error {
-	envReader := internal.NewDefaultReader()
+	envReader := internal.DefaultEnvReader{}
 	formatter, err := getFormatter(cmd)
 	if err != nil {
 		return err

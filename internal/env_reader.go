@@ -5,14 +5,6 @@ import (
 	"strings"
 )
 
-type EnvReader interface {
-	Read() []EnvVar //TODO Directory to read?
-}
-
-func NewDefaultReader() EnvReader {
-	return &DefaultEnvReader{}
-}
-
 type DefaultEnvReader struct {
 }
 
