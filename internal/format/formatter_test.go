@@ -56,6 +56,26 @@ func TestJsonFormatterPretty_Format(t *testing.T) {
 	assert(t, exp, act)
 }
 
+func TestJsonFormatterEmpty_Format(t *testing.T) {
+	fPretty := JsonFormatter{Pretty: true}
+	fCompact := JsonFormatter{Pretty: true}
+
+	var tests []env.Var
+	exp := "[]"
+
+	actPretty, err := fPretty.Format(tests)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	assert(t, exp, actPretty)
+
+	actCompact, err := fCompact.Format(tests)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	assert(t, exp, actCompact)
+}
+
 func getTestCases() []env.Var {
 	return []env.Var{
 		{

@@ -24,6 +24,9 @@ type JsonFormatter struct {
 }
 
 func (d *JsonFormatter) Format(envs []env.Var) (string, error) {
+	if len(envs) == 0 {
+		return "[]", nil
+	}
 	var j []byte
 	var err error
 	if d.Pretty {
