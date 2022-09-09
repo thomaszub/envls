@@ -8,7 +8,7 @@ import (
 )
 
 func TestDelimiterFormatter_Format(t *testing.T) {
-	f := DelimiterFormatter{delimiter: "->"}
+	f := DelimiterFormatter{Delimiter: "->"}
 	tests := getTestCases()
 	exp := `SOMEVAR->someval
 OTHER->otherval`
@@ -22,7 +22,7 @@ OTHER->otherval`
 }
 
 func TestJsonFormatterCompact_Format(t *testing.T) {
-	f := JsonFormatter{pretty: false}
+	f := JsonFormatter{Pretty: false}
 	tests := getTestCases()
 	exp := `[{"Name":"SOMEVAR","Value":"someval"},{"Name":"OTHER","Value":"otherval"}]`
 
@@ -35,7 +35,7 @@ func TestJsonFormatterCompact_Format(t *testing.T) {
 }
 
 func TestJsonFormatterPretty_Format(t *testing.T) {
-	f := JsonFormatter{pretty: true}
+	f := JsonFormatter{Pretty: true}
 	tests := getTestCases()
 	exp := `[
     {
