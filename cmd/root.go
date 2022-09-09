@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	ALL       = "all"
-	FORMATTER = "formatter"
-	SEARCH    = "search"
+	ALL    = "all"
+	FORMAT = "format"
+	SEARCH = "search"
 )
 
 var rootCmd = &cobra.Command{
@@ -26,14 +26,14 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolP(ALL, "a", false, "Show hidden environmental variables (starting with _) ")
-	rootCmd.Flags().StringP(FORMATTER, "f", "del,=", "Specifies the formatter with a comma separated list of configuration arguments. Possible values: del,DELIMITER and json,{compact,pretty}")
+	rootCmd.Flags().StringP(FORMAT, "f", "del,=", "Specifies the formatter with a comma separated list of configuration arguments. Possible values: del,DELIMITER and json,{compact,pretty}")
 	rootCmd.Flags().StringArrayP(SEARCH, "s", []string{}, "Filter environmental variables by regex pattern matching names and values")
 }
 
 func main(cmd *cobra.Command, _ []string) error {
 	var cfgs []internal.Config
 
-	format, err := cmd.Flags().GetString(FORMATTER)
+	format, err := cmd.Flags().GetString(FORMAT)
 	if err != nil {
 		return err
 	}
