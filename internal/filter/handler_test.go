@@ -1,18 +1,20 @@
-package internal
+package filter
 
 import (
 	"reflect"
 	"testing"
+
+	"github.com/thomaszub/envls/internal/env"
 )
 
 func TestEmptyFilterHandler_Accept(t *testing.T) {
 	f := FilterHandler{Filters: []Filter{}}
 	tests := []struct {
-		input EnvVar
+		input env.Var
 		exp   bool
 	}{
 		{
-			input: EnvVar{
+			input: env.Var{
 				Name:  "_&%$abc",
 				Value: "&value",
 			},
@@ -31,32 +33,32 @@ func TestEmptyFilterHandler_Accept(t *testing.T) {
 func TestFilterHandler_Accept(t *testing.T) {
 	h := FilterHandler{Filters: []Filter{&NoPrefixFilter{Prefix: "_"}, &NoPrefixFilter{Prefix: "&"}}}
 	tests := []struct {
-		input EnvVar
+		input env.Var
 		exp   bool
 	}{
 		{
-			input: EnvVar{
+			input: env.Var{
 				Name:  "SOMEVAR",
 				Value: "&value",
 			},
 			exp: true,
 		},
 		{
-			input: EnvVar{
+			input: env.Var{
 				Name:  "&SOMEVAR",
 				Value: "value",
 			},
 			exp: false,
 		},
 		{
-			input: EnvVar{
+			input: env.Var{
 				Name:  "_SOMEVAR",
 				Value: "value",
 			},
 			exp: false,
 		},
 		{
-			input: EnvVar{
+			input: env.Var{
 				Name:  "SOMEVAR",
 				Value: "_value",
 			},
@@ -74,7 +76,7 @@ func TestFilterHandler_Accept(t *testing.T) {
 
 func TestFilterHandler_Accepted(t *testing.T) {
 	h := FilterHandler{Filters: []Filter{&NoPrefixFilter{Prefix: "_"}, &NoPrefixFilter{Prefix: "&"}}}
-	tests := []EnvVar{
+	tests := []env.Var{
 		{
 			Name:  "SOMEVAR",
 			Value: "&value",
@@ -93,7 +95,7 @@ func TestFilterHandler_Accepted(t *testing.T) {
 		},
 	}
 
-	exp := []EnvVar{
+	exp := []env.Var{
 		{
 			Name:  "SOMEVAR",
 			Value: "&value",

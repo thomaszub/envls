@@ -1,8 +1,10 @@
-package internal
+package format
 
 import (
 	"reflect"
 	"testing"
+
+	"github.com/thomaszub/envls/internal/env"
 )
 
 func TestDelimiterFormatter_Format(t *testing.T) {
@@ -54,8 +56,8 @@ func TestJsonFormatterPretty_Format(t *testing.T) {
 	assert(t, exp, act)
 }
 
-func getTestCases() []EnvVar {
-	return []EnvVar{
+func getTestCases() []env.Var {
+	return []env.Var{
 		{
 			Name:  "SOMEVAR",
 			Value: "someval",

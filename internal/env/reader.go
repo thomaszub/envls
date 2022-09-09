@@ -1,15 +1,15 @@
-package internal
+package env
 
 import (
 	"os"
 	"strings"
 )
 
-type DefaultEnvReader struct {
+type DefaultReader struct {
 }
 
-func (r *DefaultEnvReader) Read() []EnvVar {
-	var envVars []EnvVar
+func (r *DefaultReader) Read() []Var {
+	var envVars []Var
 	for _, s := range os.Environ() {
 		envVar := createEnvVar(s)
 		envVars = append(envVars, envVar)
@@ -17,9 +17,9 @@ func (r *DefaultEnvReader) Read() []EnvVar {
 	return envVars
 }
 
-func createEnvVar(s string) EnvVar {
+func createEnvVar(s string) Var {
 	keyValuePair := strings.Split(s, "=")
-	return EnvVar{
+	return Var{
 		Name:  keyValuePair[0],
 		Value: keyValuePair[1],
 	}

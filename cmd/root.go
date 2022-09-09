@@ -5,7 +5,9 @@ import (
 	"regexp"
 
 	"github.com/spf13/cobra"
-	"github.com/thomaszub/envls/internal"
+	"github.com/thomaszub/envls/internal/env"
+	"github.com/thomaszub/envls/internal/filter"
+	"github.com/thomaszub/envls/internal/format"
 )
 
 const (
@@ -32,7 +34,7 @@ func init() {
 }
 
 func main(cmd *cobra.Command, _ []string) error {
-	envReader := internal.DefaultEnvReader{}
+	envReader := env.DefaultReader{}
 	formatter, err := getFormatter(cmd)
 	if err != nil {
 		return err
@@ -51,16 +53,16 @@ func main(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
-func getFormatter(cmd *cobra.Command) (internal.Formatter, error) {
+func getFormatter(cmd *cobra.Command) (format.Formatter, error) {
 	flag, err := cmd.Flags().GetString(FORMATTER)
 	if err != nil {
 		return nil, err
 	}
-	return internal.GetFormatter(flag)
+	return format.GetFormatter(flag)
 }
 
-func makeFilterHandler(cmd *cobra.Command) (*internal.FilterHandler, error) {
-	var filters []internal.Filter
+func makeFilterHandler(cmd *cobra.Command) (*filter.FilterHandler, error) {
+	var filters []filter.Filter
 	all, err := allFlagFilters(cmd)
 	if err != nil {
 		return nil, err
@@ -71,34 +73,34 @@ func makeFilterHandler(cmd *cobra.Command) (*internal.FilterHandler, error) {
 		return nil, err
 	}
 	filters = append(filters, search...)
-	h := internal.FilterHandler{Filters: filters}
+	h := filter.FilterHandler{Filters: filters}
 	return &h, nil
 }
 
-func allFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
+func allFlagFilters(cmd *cobra.Command) ([]filter.Filter, error) {
 	listHiddenVars, err := cmd.Flags().GetBool(ALL)
 	if err != nil {
 		return nil, err
 	}
 	if listHiddenVars {
-		return []internal.Filter{}, nil
+		return []filter.Filter{}, nil
 	}
-	f := internal.NoPrefixFilter{Prefix: "_"}
-	return []internal.Filter{&f}, nil
+	f := filter.NoPrefixFilter{Prefix: "_"}
+	return []filter.Filter{&f}, nil
 }
 
-func searchFlagFilters(cmd *cobra.Command) ([]internal.Filter, error) {
+func searchFlagFilters(cmd *cobra.Command) ([]filter.Filter, error) {
 	searched, err := cmd.Flags().GetStringArray(SEARCH)
 	if err != nil {
 		return nil, err
 	}
-	var filters []internal.Filter
+	var filters []filter.Filter
 	for _, s := range searched {
 		regex, err := regexp.Compile(s)
 		if err != nil {
 			return nil, err
 		}
-		f := internal.RegexFilter{Regex: regex}
+		f := filter.RegexFilter{Regex: regex}
 		filters = append(filters, &f)
 	}
 	return filters, nil

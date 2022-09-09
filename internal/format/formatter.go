@@ -1,20 +1,22 @@
-package internal
+package format
 
 import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/thomaszub/envls/internal/env"
 )
 
 type Formatter interface {
-	Format(envs []EnvVar) (string, error)
+	Format(envs []env.Var) (string, error)
 }
 
 type DelimiterFormatter struct {
 	delimiter string
 }
 
-func (d *DelimiterFormatter) Format(envs []EnvVar) (string, error) {
+func (d *DelimiterFormatter) Format(envs []env.Var) (string, error) {
 	var output []string
 	for _, env := range envs {
 		output = append(output, env.Name+d.delimiter+env.Value)
@@ -26,7 +28,7 @@ type JsonFormatter struct {
 	pretty bool
 }
 
-func (d *JsonFormatter) Format(envs []EnvVar) (string, error) {
+func (d *JsonFormatter) Format(envs []env.Var) (string, error) {
 	var j []byte
 	var err error
 	if d.pretty {
