@@ -14,23 +14,24 @@ type EnvReader interface {
 	Read() []env.Var
 }
 
-type FilterHandler interface {
-	Accepted(envs []env.Var) []env.Var
-}
-
 type Formatter interface {
 	Format(envs []env.Var) (string, error)
 }
 
 type Pipeline struct {
 	reader    EnvReader
-	filter    FilterHandler
+	filter    filter.Filter
 	formatter Formatter
 }
 
 func (p *Pipeline) Execute() (string, error) {
 	envs := p.reader.Read()
-	accepted := p.filter.Accepted(envs)
+	var accepted []env.Var
+	for _, env := range envs {
+		if p.filter.Accept(env) {
+			accepted = append(accepted, env)
+		}
+	}
 	formatted, err := p.formatter.Format(accepted)
 	if err != nil {
 		return "", err
@@ -114,7 +115,7 @@ func NewPipeline(configs ...Config) (*Pipeline, error) {
 	for _, s := range cfg.search {
 		filters = append(filters, &filter.RegexFilter{Regex: s})
 	}
-	h := filter.FilterHandler{Filters: filters}
+	h := filter.AndFilter{Filters: filters}
 
 	return &Pipeline{&r, &h, cfg.formatter}, nil
 }
